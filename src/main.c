@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INPUT_QUEUE "/packager-out"
-#define OUTPUT_QUEUE "/plogger-out"
+#define INPUT_QUEUE "packager-out"
+#define OUTPUT_QUEUE "plogger-out"
 #define MAX_MSG_SIZE 600
 
 char *outfile = NULL;
