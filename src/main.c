@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
     // File, try to open
     else {
-        outstream = fopen(outfile, "w");
+        outstream = fopen(outfile, "a");
         if (outstream == NULL) {
             fprintf(stderr, "Could not open file '%s'.\n", outfile);
             return EXIT_FAILURE;
