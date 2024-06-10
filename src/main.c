@@ -8,7 +8,7 @@
 
 #define INPUT_QUEUE "packager-out"
 #define OUTPUT_QUEUE "plogger-out"
-#define MAX_MSG_SIZE 600
+#define MAX_MSG_SIZE 256
 
 char *outfile = NULL;
 char buffer[MAX_MSG_SIZE];
