@@ -69,10 +69,11 @@ int main(int argc, char **argv) {
 
     // Read and log packets forever
     size_t nbytes;
+    unsigned int priority;
     for (;;) {
 
         // If we fail to receive a message, jump to the next loop iteration
-        nbytes = mq_receive(in_q, buffer, MAX_MSG_SIZE, 0);
+        nbytes = mq_receive(in_q, buffer, MAX_MSG_SIZE, &priority);
         if (nbytes == (size_t)-1) {
             fprintf(stderr, "Failed to receive input message: %s.\n", strerror(errno));
             continue;
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Failed to write data to outstream: %s\n", strerror(errno));
         }
 
-        if (mq_send(out_q, buffer, nbytes, 0) == -1) {
+        if (mq_send(out_q, buffer, nbytes, priority) == -1) {
             fprintf(stderr, "Failed to write output to message queue: %s.\n", strerror(errno));
         }
     }
