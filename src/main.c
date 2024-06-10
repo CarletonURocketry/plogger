@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
     // Try to open output message queue
     struct mq_attr q_attr = {0};
-    q_attr.mq_maxmsg = 10;
+    q_attr.mq_maxmsg = 20;
     q_attr.mq_msgsize = MAX_MSG_SIZE;
     mqd_t out_q = mq_open(OUTPUT_QUEUE, O_CREAT | O_RDWR | O_NONBLOCK, S_IWOTH | S_IRUSR, &q_attr);
     if (out_q == -1) {
