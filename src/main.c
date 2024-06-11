@@ -1,3 +1,4 @@
+#include "../logging-utils/logging.h"
 #include <errno.h>
 #include <getopt.h>
 #include <mqueue.h>
@@ -45,7 +46,7 @@ int main(int argc, char **argv) {
     else {
         outstream = fopen(outfile, "a");
         if (outstream == NULL) {
-            fprintf(stderr, "Could not open file '%s'.\n", outfile);
+            log_print(stderr, LOG_ERROR, "Could not open file '%s'.\n", outfile);
             return EXIT_FAILURE;
         }
     }
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
     // Try to open input message queue
     mqd_t in_q = mq_open(INPUT_QUEUE, O_RDONLY);
     if (in_q < 0) {
-        fprintf(stderr, "Could not open input message queue '%s': %s\n", INPUT_QUEUE, strerror(errno));
+        log_print(stderr, LOG_ERROR, "Could not open input message queue '%s': %s\n", INPUT_QUEUE, strerror(errno));
         return EXIT_FAILURE;
     }
 
@@ -63,7 +64,8 @@ int main(int argc, char **argv) {
     q_attr.mq_msgsize = MAX_MSG_SIZE;
     mqd_t out_q = mq_open(OUTPUT_QUEUE, O_CREAT | O_RDWR | O_NONBLOCK, S_IWOTH | S_IRUSR, &q_attr);
     if (out_q == -1) {
-        fprintf(stderr, "Could not create output queue '%s' with error: '%s'\n", OUTPUT_QUEUE, strerror(errno));
+        log_print(stderr, LOG_ERROR, "Could not create output queue '%s' with error: '%s'\n", OUTPUT_QUEUE,
+                  strerror(errno));
         exit(EXIT_FAILURE);
     }
 
@@ -75,17 +77,17 @@ int main(int argc, char **argv) {
         // If we fail to receive a message, jump to the next loop iteration
         nbytes = mq_receive(in_q, buffer, MAX_MSG_SIZE, &priority);
         if (nbytes == (size_t)-1) {
-            fprintf(stderr, "Failed to receive input message: %s.\n", strerror(errno));
+            log_print(stderr, LOG_ERROR, "Failed to receive input message: %s.\n", strerror(errno));
             continue;
         }
 
         // If we fail to write to file, just log it and make sure we pass the packet out
         if ((fwrite(buffer, 1, nbytes, outstream)) < nbytes) {
-            fprintf(stderr, "Failed to write data to outstream: %s\n", strerror(errno));
+            log_print(stderr, LOG_ERROR, "Failed to write data to outstream: %s\n", strerror(errno));
         }
 
         if (mq_send(out_q, buffer, nbytes, priority) == -1) {
-            fprintf(stderr, "Failed to write output to message queue: %s.\n", strerror(errno));
+            log_print(stderr, LOG_ERROR, "Failed to write output to message queue: %s.\n", strerror(errno));
         }
     }
 
