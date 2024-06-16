@@ -86,8 +86,9 @@ int main(int argc, char **argv) {
             log_print(stderr, LOG_ERROR, "Failed to write data to outstream: %s\n", strerror(errno));
         }
 
-        if (mq_send(out_q, buffer, nbytes, priority) == -1) {
-            log_print(stderr, LOG_ERROR, "Failed to write output to message queue: %s.\n", strerror(errno));
+        if (mq_send(out_q, buffer, nbytes, priority) == -1 && errno != EAGAIN) {
+            // Do not log EAGAIN since that's expected with the broadcaster filling up
+            log_print(stderr, LOG_ERROR, "Failed to send message: %s.\n", strerror(errno));
         }
     }
 
